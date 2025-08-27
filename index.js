@@ -8,7 +8,7 @@ const app = express();
 const upload = multer();
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-1.5-flash";
 
 app.use(express.json());
 
@@ -29,17 +29,17 @@ function extractText(resp) {
 }
 
 // Simple text completion endpoint
-app.post("/text", async (req, res) => {
+app.post("/generate-text", async (req, res) => {
   console.log("BODY:", req.body);
   try {
-    const  text  = req.body.text;
+    const  text  = req.body.prompt;
     if (!text || typeof text !== "string") {
       return res.status(400).send("Invalid input: 'text' must be a string");
     }
 
     const resp = await ai.models.generateContent({
       model: GEMINI_MODEL,
-      contents: text,
+      contents: [text],
     //   temperature: 0.5,
     //   maxTokens: 100,
     });
@@ -66,11 +66,10 @@ app.post('/generate-from-image', upload.single('image'), async (req, res) => {
     }
 })
 //endpoint to handle file uploads
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/generate-from-document', upload.single('file'), async (req, res) => {
     try {
         const { prompt } = req.body;
         const file = req.file;
-        const fileName = file.originalname;
         const fileType = file.mimetype;
         const fileBuffer = file.buffer;
         const fileBase64 = fileBuffer.toString('base64');
