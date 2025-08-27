@@ -66,7 +66,7 @@ app.post('/generate-from-image', upload.single('image'), async (req, res) => {
     }
 })
 //endpoint to handle file uploads
-app.post('/generate-from-document', upload.single('file'), async (req, res) => {
+app.post('/generate-from-document', upload.single('document'), async (req, res) => {
     try {
         const { prompt } = req.body;
         const file = req.file;
